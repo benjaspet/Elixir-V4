@@ -18,7 +18,9 @@ package dev.benpetrillo.elixir.managers;
 
 import dev.benpetrillo.elixir.Config;
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.commands.GuildsCommand;
+import dev.benpetrillo.elixir.commands.misc.ConfigureCommand;
 import dev.benpetrillo.elixir.commands.misc.GenKeyCommand;
 import dev.benpetrillo.elixir.commands.misc.InfoCommand;
 import dev.benpetrillo.elixir.commands.music.StopCommand;
@@ -34,7 +36,7 @@ public final class ApplicationCommandManager {
 
     public static void initialize() {
         new ApplicationCommandManager(ElixirClient.getCommandHandler());
-        if (Boolean.parseBoolean(Config.get("DEPLOY-APPLICATION-COMMANDS-GLOBAL"))) {
+        if (ElixirConstants.DEPLOY_GLOBAL) {
             ElixirClient.getCommandHandler().deployAll(null);
             ElixirClient.logger.info("All global slash commands have been deployed.");
         } else if (Boolean.parseBoolean(Config.get("DELETE-APPLICATION-COMMANDS-GLOBAL"))) {
@@ -46,7 +48,6 @@ public final class ApplicationCommandManager {
     private ApplicationCommandManager(ComplexCommandHandler handler) {
         registerCommand(handler,
                 new GenKeyCommand(),
-                new GuildsCommand(),
                 new InfoCommand(),
                 new JoinCommand(),
                 new LoopCommand(),
@@ -64,6 +65,13 @@ public final class ApplicationCommandManager {
                 new StopCommand(),
                 new VolumeCommand()
         );
+
+        // Register commands specific to guild-only deployments.
+        if (ElixirConstants.DEPLOY_GUILD) {
+            handler
+                    .registerCommand(new GuildsCommand())
+                    .registerCommand(new ConfigureCommand());
+        }
 
         handler.onArgumentError = interaction -> interaction.setEphemeral().reply(Embed.error("Invalid argument(s) provided."));
     }

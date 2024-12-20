@@ -16,6 +16,7 @@
 
 package dev.benpetrillo.elixir.managers;
 
+import com.grack.nanojson.JsonObject;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -36,12 +37,16 @@ import com.sedmelluq.lava.extensions.youtuberotator.planner.NanoIpRoutePlanner;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import dev.benpetrillo.elixir.ElixirClient;
 import dev.benpetrillo.elixir.music.spotify.SpotifySourceManager;
+import dev.benpetrillo.elixir.objects.Pair;
 import dev.benpetrillo.elixir.types.ElixirException;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.Utilities;
 import dev.benpetrillo.elixir.ElixirConstants;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.http.YoutubeOauth2Handler;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -49,6 +54,8 @@ import org.apache.hc.core5.annotation.Internal;
 import org.jetbrains.annotations.Nullable;
 import tech.xigam.cch.utils.Interaction;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -63,13 +70,19 @@ public final class ElixirMusicManager {
     public final HttpAudioSourceManager httpSource = new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY);
     public final SoundCloudAudioSourceManager soundCloudSource = SoundCloudAudioSourceManager.createDefault();
 
+    @Getter @Setter
+    private boolean youtubeConfigured = false;
+
     public ElixirMusicManager() {
+        this.configure();
+    }
 
-        // TODO: OAuth2 token setup for YouTube via a command for administrators.
-        // TODO: Set refresh token dynamically.
-
-        this.youtubeSource.useOauth2(null, false);
-        ElixirClient.logger.info("OAuth2 for YouTube enabling...");
+    /**
+     * Configures the source managers for Elixir.
+     */
+    private void configure() {
+        // Configure YouTube using potential credentials.
+        this.configureYouTube();
 
         this.audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());
         this.audioPlayerManager.registerSourceManager(new VimeoAudioSourceManager());
@@ -100,6 +113,102 @@ public final class ElixirMusicManager {
         }
     }
 
+    /**
+     * Configures YouTube using potential credentials on the file system.
+     */
+    private void configureYouTube() {
+        // Check if the file exists.
+        if (Files.exists(ElixirConstants.YT_CREDENTIALS)) {
+            try {
+                // Read the file.
+                var token = Files.readString(ElixirConstants.YT_CREDENTIALS);
+                this.youtubeSource.useOauth2(token, true);
+
+                ElixirClient.logger.info("OAuth2 for YouTube enabled.");
+                this.setYoutubeConfigured(true);
+                return;
+            } catch (Exception exception) {
+                ElixirClient.logger.warn("Failed to read YouTube OAuth2 credentials.");
+                ElixirClient.logger.debug("Failed to read YouTube OAuth2 credentials.", exception);
+            }
+        }
+
+        ElixirClient.getLogger().warn("YouTube OAuth2 credentials not found.");
+        ElixirClient.getLogger().warn("Please use the '/configure' command to set up YouTube!");
+    }
+
+    /**
+     * Begins the YouTube OAuth2 authorization flow.
+     *
+     * @param callback Invoked when the user has successfully authenticated.
+     * @return The user code for the developer to log in with.
+     */
+    public Pair<String, String> doAuthFlow(Consumer<Void> callback) {
+        try {
+            // Get the oauth2 handler instance.
+            var handlerField = YoutubeAudioSourceManager.class
+                    .getDeclaredField("oauth2Handler");
+            handlerField.setAccessible(true);
+
+            var handler = handlerField.get(this.youtubeSource);
+
+            // Get the device code method.
+            var fetchDeviceCode = YoutubeOauth2Handler.class
+                    .getDeclaredMethod("fetchDeviceCode");
+            fetchDeviceCode.setAccessible(true);
+
+            // Invoke the method.
+            var response = (JsonObject) fetchDeviceCode.invoke(handler);
+
+            // Extract data.
+            var url = response.getString("verification_url");
+            var userCode = response.getString("user_code");
+
+            var deviceCode = response.getString("device_code");
+            var interval = response.getLong("interval") * 1000;
+
+            // Get the poll method.
+            var pollForToken = YoutubeOauth2Handler.class
+                    .getDeclaredMethod("pollForToken", String.class, long.class);
+            pollForToken.setAccessible(true);
+
+            // Begin thread to poll for token acceptance.
+            new Thread(() -> {
+                try {
+                    // Poll for the token.
+                    pollForToken.invoke(handler,
+                            deviceCode,
+                            interval == 0 ? 5000 : interval);
+
+                    // Once the above method finishes, invoke the callback.
+                    callback.accept(null);
+
+                    // Set the YouTube configuration to true.
+                    this.setYoutubeConfigured(true);
+                } catch (Exception ignored) { }
+            }, "youtube-source-token-poller").start();
+
+            return Pair.of(url, userCode);
+        } catch (Exception exception) {
+            ElixirClient.getLogger().warn("Failed to fetch device code for YouTube OAuth2.", exception);
+            return null;
+        }
+    }
+
+    /**
+     * Saves the YouTube OAuth2 credentials.
+     */
+    @SneakyThrows
+    public void saveCredentials() throws IOException {
+        var token = this.youtubeSource.getOauth2RefreshToken();
+        if (token == null) {
+            throw new Exception("Invalid refresh token.");
+        }
+
+        ElixirClient.getLogger().info("Saving YouTube OAuth2 credentials...");
+        Files.writeString(ElixirConstants.YT_CREDENTIALS, token);
+    }
+
     public GuildMusicManager getMusicManager(Guild guild) {
         return this.musicManagers.computeIfAbsent(guild.getId(), (guildId) -> {
             var guildMusicManager = new GuildMusicManager(this.audioPlayerManager, guild);
@@ -124,7 +233,7 @@ public final class ElixirMusicManager {
     public void loadAndPlay(String track, Interaction interaction, String url) {
         assert interaction.getGuild() != null;
         final GuildMusicManager musicManager = this.getMusicManager(interaction.getGuild());
-        ElixirClient.logger.info("Loading track: {}", track);
+        ElixirClient.logger.debug("Loading track: {}", track);
         this.audioPlayerManager.loadItemOrdered(musicManager, track, new AudioLoadResultHandler() {
 
             @Override
@@ -228,8 +337,14 @@ public final class ElixirMusicManager {
         });
     }
 
+    /**
+     * @return The current, or new instance of the music manager.
+     */
     public static ElixirMusicManager getInstance() {
-        if (instance == null) instance = new ElixirMusicManager();
+        if (instance == null) {
+            instance = new ElixirMusicManager();
+        }
+
         return instance;
     }
 }

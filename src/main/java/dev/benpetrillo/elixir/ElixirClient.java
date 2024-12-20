@@ -126,6 +126,9 @@ public final class ElixirClient {
         } catch (Exception exception) {
             logger.error("Failed to authorize Spotify.", exception);
         }
+
+        // Register source managers.
+        ElixirMusicManager.getInstance();
     }
 
     public static JDA getJda() {

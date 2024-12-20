@@ -61,7 +61,7 @@ public final class GenKeyCommand extends Command {
     }
 
     try {
-      String key= APIAuthUtil.createAPIKey(id, guildId);
+      String key = APIAuthUtil.createAPIKey(id, guildId);
 
       String avatar = ElixirClient.getInstance().jda.getSelfUser().getEffectiveAvatarUrl();
 

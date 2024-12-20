@@ -31,22 +31,21 @@ public final class ReadyListener extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        final JDA jda = event.getJDA();
-        final String username = jda.getSelfUser().getEffectiveName();
+        var jda = event.getJDA();
+        var username = jda.getSelfUser().getEffectiveName();
 
         log.info("{} has logged in.", username);
 
-        boolean deployGuild = Boolean.parseBoolean(Config.get("DEPLOY-APPLICATION-COMMANDS-GUILD"));
-        boolean deleteGuild = Boolean.parseBoolean(Config.get("DELETE-APPLICATION-COMMANDS-GUILD"));
+        var deployGuild = ElixirConstants.DEPLOY_GUILD;
+        var deleteGuild = Boolean.parseBoolean(Config.get("DELETE-APPLICATION-COMMANDS-GUILD"));
 
         if (deployGuild && deleteGuild) {
             log.warn("Cannot deploy and delete guild commands at the same time.");
         } else if (!deployGuild && !deleteGuild) {
             log.warn("No action was specified for guild commands.");
         } else {
-
-            for (String guildId : ElixirConstants.GUILDS) {
-                final Guild guild = jda.getGuildById(guildId);
+            for (var guildId : ElixirConstants.GUILDS) {
+                var guild = jda.getGuildById(guildId);
                 if (guild != null) {
                     if (deployGuild) {
                         ElixirClient.getCommandHandler().deployAll(guild);
