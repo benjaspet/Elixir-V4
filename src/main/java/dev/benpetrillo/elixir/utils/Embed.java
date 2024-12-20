@@ -26,15 +26,15 @@ public final class Embed {
 
     public static MessageEmbed error(String description) {
         return new EmbedBuilder()
-                .setDescription(description)
-                .setColor(ElixirConstants.ERROR_EMBED_COLOR)
-                .build();
+            .setDescription(description)
+            .setColor(ElixirConstants.ERROR_EMBED_COLOR)
+            .build();
     }
 
     public static MessageEmbed def(String description) {
         return new EmbedBuilder()
-                .setDescription(description)
-                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                .build();
+            .setDescription(description)
+            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+            .build();
     }
 }

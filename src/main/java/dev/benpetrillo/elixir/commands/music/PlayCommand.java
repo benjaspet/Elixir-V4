@@ -56,7 +56,8 @@ public final class PlayCommand extends Command implements Arguments {
         final GuildVoiceState voiceState = interaction.getGuild().getSelfMember().getVoiceState();
         assert interaction.getMember() != null;
         final GuildVoiceState memberVoiceState = interaction.getMember().getVoiceState();
-        assert memberVoiceState != null; interaction.deferReply();
+        assert memberVoiceState != null;
+        interaction.deferReply();
         if (!memberVoiceState.inAudioChannel()) {
             interaction.reply(Embed.error("You must be in a voice channel to run this command."), false);
             return;
@@ -72,7 +73,8 @@ public final class PlayCommand extends Command implements Arguments {
         if (!Utilities.isValidURL(query)) {
             query = HttpUtil.searchForVideo(query);
             if (query == null) {
-                interaction.reply(Embed.error("No results found for that query."));return;
+                interaction.reply(Embed.error("No results found for that query."));
+                return;
             }
             ElixirMusicManager.getInstance().loadAndPlay(query, interaction, "https://www.youtube.com");
             return;
@@ -90,7 +92,7 @@ public final class PlayCommand extends Command implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.createTrailingArgument("query", "The track to play, by URL or query.", "query", OptionType.STRING, true, 0)
+            Argument.createTrailingArgument("query", "The track to play, by URL or query.", "query", OptionType.STRING, true, 0)
         );
     }
 }

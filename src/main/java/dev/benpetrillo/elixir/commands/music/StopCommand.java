@@ -58,15 +58,15 @@ public final class StopCommand extends Command implements Arguments {
 
         musicManager.stop(); // Stop the music.
         ElixirMusicManager.getInstance() // Remove the guild music manager.
-                .removeGuildMusicManager(interaction.getGuild());
+            .removeGuildMusicManager(interaction.getGuild());
         interaction.reply(Embed.def("The queue has been cleared" +
-                (shouldLeave ? " and the player has been stopped" : "") + "."));
+            (shouldLeave ? " and the player has been stopped" : "") + "."));
     }
 
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("leave", "Should the bot leave the channel?", "leave", OptionType.BOOLEAN, false, 0)
+            Argument.create("leave", "Should the bot leave the channel?", "leave", OptionType.BOOLEAN, false, 0)
         );
     }
 }

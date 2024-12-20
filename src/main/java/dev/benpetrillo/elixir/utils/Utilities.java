@@ -23,12 +23,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import dev.benpetrillo.elixir.Config;
-import dev.benpetrillo.elixir.types.ElixirException;
 import dev.benpetrillo.elixir.ElixirConstants;
+import dev.benpetrillo.elixir.types.ElixirException;
 import net.dv8tion.jda.api.JDAInfo;
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -36,13 +38,14 @@ import java.util.Base64;
 
 public final class Utilities {
     private static final Gson gson
-            = new GsonBuilder()
-            .serializeNulls()
-            .disableHtmlEscaping()
-            .create();
+        = new GsonBuilder()
+        .serializeNulls()
+        .disableHtmlEscaping()
+        .create();
 
     /**
      * Throws an exception to a webhook.
+     *
      * @param exception The throwable to throw.
      */
 
@@ -52,18 +55,19 @@ public final class Utilities {
         if (exception.guild != null) description.append("Guild ID: ").append(exception.guild.getId()).append("\n");
         if (exception.member != null) description.append("Member: <@").append(exception.member.getId()).append(">\n");
         if (exception.stackTrace() != null) {
-            var stackTrace = exception.stackTrace(); assert stackTrace != null;
+            var stackTrace = exception.stackTrace();
+            assert stackTrace != null;
             description.append("File: ").append(stackTrace.getFileName()).append("\n");
             description.append("Line: ").append(stackTrace.getLineNumber()).append("\n");
             description.append("Method: ").append(stackTrace.getMethodName()).append("\n");
         }
         var client = WebhookClient.withUrl(webhook);
         var embed = new WebhookEmbedBuilder()
-                .setTitle(new WebhookEmbed.EmbedTitle("Exception", ""))
-                .setColor(ElixirConstants.ERROR_EMBED_COLOR.getRGB())
-                .setTimestamp(OffsetDateTime.now())
-                .addField(new WebhookEmbed.EmbedField(false, "Message", exception.getMessage()))
-                .setDescription(String.valueOf(description));
+            .setTitle(new WebhookEmbed.EmbedTitle("Exception", ""))
+            .setColor(ElixirConstants.ERROR_EMBED_COLOR.getRGB())
+            .setTimestamp(OffsetDateTime.now())
+            .addField(new WebhookEmbed.EmbedField(false, "Message", exception.getMessage()))
+            .setDescription(String.valueOf(description));
         if (exception.additionalInformation != null) {
             embed.addField(new WebhookEmbed.EmbedField(false, "Additional Information", exception.additionalInformation));
         }
@@ -87,6 +91,7 @@ public final class Utilities {
 
     /**
      * Determine if a URL is valid.
+     *
      * @param input The URL to check.
      * @return boolean
      */
@@ -103,6 +108,7 @@ public final class Utilities {
 
     /**
      * Encode a specific URI component.
+     *
      * @param str The string to encode.
      * @return String
      */
@@ -113,6 +119,7 @@ public final class Utilities {
 
     /**
      * Convert ms to a formatted timestamp.
+     *
      * @param ms The amount of milliseconds.
      * @return String
      */
@@ -130,16 +137,17 @@ public final class Utilities {
 
     /**
      * Formats the funky ISO 8601 timestamp into seconds.
+     *
      * @param duration The ISO 8601 timestamp.
      * @return long
      */
 
     public static long cleanYouTubeFormat(String duration) {
         duration = duration.replace("PT", "").replace("H", ":")
-                .replace("M", ":").replace("S", "");
+            .replace("M", ":").replace("S", "");
         var split = duration.split(":");
         long length = 0;
-        switch(split.length) {
+        switch (split.length) {
             default -> {
                 return Long.parseLong(duration) * 1000;
             }
@@ -160,6 +168,7 @@ public final class Utilities {
 
     /**
      * Extracts the video ID from a given URL.
+     *
      * @param url The YouTube URL to extract the video ID from.
      * @return A video ID.
      */
@@ -171,6 +180,7 @@ public final class Utilities {
 
     /**
      * Extracts the playlist ID from a given URL.
+     *
      * @param url The YouTube URL to extract the playlist ID from.
      * @return A playlist ID.
      */
@@ -182,6 +192,7 @@ public final class Utilities {
 
     /**
      * Extracts the song ID from a given URL.
+     *
      * @param url The Spotify URL to extract the song ID from.
      * @return A song ID.
      */
@@ -193,6 +204,7 @@ public final class Utilities {
 
     /**
      * Pretty prints a given string.
+     *
      * @param toPrint The string to format.
      * @return A pretty/formatted string.
      */
@@ -204,45 +216,50 @@ public final class Utilities {
         for (String string : lower) {
             String pass2 = string.substring(0, 1).toUpperCase() + string.substring(1);
             builder.append(pass2).append(" ");
-        } return builder.toString();
+        }
+        return builder.toString();
     }
 
     /**
      * Parses other strings into a boolean value.
+     *
      * @param toParse The string to parse.
      * @return A boolean, or false if unable to parse.
      */
 
     public static boolean parseBoolean(String toParse) {
-            return toParse.equalsIgnoreCase("true") || toParse.equalsIgnoreCase("yes") || toParse.equalsIgnoreCase("1");
+        return toParse.equalsIgnoreCase("true") || toParse.equalsIgnoreCase("yes") || toParse.equalsIgnoreCase("1");
     }
 
     /**
      * Convert a given object to a JSON string.
-     * @param json The object to convert.
+     *
+     * @param json  The object to convert.
      * @param klass The class of the object.
-     * @param <T> The type of the object.
+     * @param <T>   The type of the object.
      * @return A de-serialized object.
      */
 
-    public static <T> T deserialize(String json, Class <T> klass) {
+    public static <T> T deserialize(String json, Class<T> klass) {
         return gson.fromJson(json, klass);
     }
 
     /**
      * Convert a given object to a JSON string.
-     * @param json The object to convert.
+     *
+     * @param json  The object to convert.
      * @param klass The class of the object.
-     * @param <T> The type of the object.
+     * @param <T>   The type of the object.
      * @return A de-serialized object.
      */
 
-    public static <T> T deserialize(JsonElement json, Class <T> klass) {
+    public static <T> T deserialize(JsonElement json, Class<T> klass) {
         return gson.fromJson(json, klass);
     }
 
     /**
      * Convert a given object to a JSON string.
+     *
      * @param object The object to convert.
      * @return A serialized object.
      */
@@ -263,6 +280,7 @@ public final class Utilities {
 
     /**
      * Encode a string to Base64
+     *
      * @param toEncode The string to encode.
      * @return A Base64 encoded string.
      */
@@ -273,6 +291,7 @@ public final class Utilities {
 
     /**
      * Decode a Base64 string.
+     *
      * @param toDecode The string to decode.
      * @return A decoded string.
      */
@@ -283,6 +302,7 @@ public final class Utilities {
 
     /**
      * Shorten a string to enable it to fit inside an embed.
+     *
      * @param toShorten The string to shorten.
      * @return String
      */
@@ -293,6 +313,7 @@ public final class Utilities {
 
     /**
      * Get the JDA version.
+     *
      * @return String
      */
 
@@ -304,8 +325,8 @@ public final class Utilities {
      * Clamps a value between a min and max.
      *
      * @param value The value to clamp.
-     * @param min The minimum value.
-     * @param max The maximum value.
+     * @param min   The minimum value.
+     * @param max   The maximum value.
      * @return The clamped value.
      */
     public static int clamp(int value, int min, int max) {

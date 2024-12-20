@@ -25,31 +25,35 @@ public class ElixirException extends Exception {
     public Member member;
     public Exception exception;
     public String additionalInformation;
-    
+
     public ElixirException() {
         this.guild = null;
         this.member = null;
     }
-    
+
     public ElixirException(Guild guild, Member member) {
         this.guild = guild;
         this.member = member;
     }
-    
+
     public ElixirException guild(Guild guild) {
-        this.guild = guild; return this;
+        this.guild = guild;
+        return this;
     }
-    
+
     public ElixirException member(Member member) {
-        this.member = member; return this;
+        this.member = member;
+        return this;
     }
-    
+
     public ElixirException exception(Exception exception) {
-        this.exception = exception; return this;
+        this.exception = exception;
+        return this;
     }
-    
+
     public ElixirException additionalInformation(String additionalInformation) {
-        this.additionalInformation = additionalInformation; return this;
+        this.additionalInformation = additionalInformation;
+        return this;
     }
 
     public StackTraceElement stackTrace() {
@@ -59,11 +63,11 @@ public class ElixirException extends Exception {
     public StackTraceElement[] fullStackTrace() {
         return this.exception.getStackTrace();
     }
-    
+
     /*
      * Overwritten Methods
      */
-    
+
     public String getMessage() {
         if (this.exception != null) {
             return this.exception.getMessage();

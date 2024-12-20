@@ -35,13 +35,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public final class TrackScheduler extends AudioEventAdapter {
 
-    private final GuildMusicManager manager;
-
     public final AudioPlayer player;
     @Getter
     public final BlockingQueue<AudioTrack> queue;
     public final Guild guild;
-
+    private final GuildMusicManager manager;
     public LoopMode repeating = LoopMode.NONE;
 
     public TrackScheduler(GuildMusicManager manager) {
@@ -83,7 +81,7 @@ public final class TrackScheduler extends AudioEventAdapter {
             return;
         }
         if (this.player.getPlayingTrack() != null) {
-            if(this.repeating == LoopMode.QUEUE)
+            if (this.repeating == LoopMode.QUEUE)
                 this.queue.add(player.getPlayingTrack().makeClone());
             this.player.stopTrack();
         }
@@ -124,7 +122,8 @@ public final class TrackScheduler extends AudioEventAdapter {
         }
     }
 
-    @Getter @AllArgsConstructor
+    @Getter
+    @AllArgsConstructor
     public enum LoopMode {
         NONE(0),
         TRACK(2),

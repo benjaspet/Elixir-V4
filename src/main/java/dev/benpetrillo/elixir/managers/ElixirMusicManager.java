@@ -36,12 +36,12 @@ import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.planner.NanoIpRoutePlanner;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.music.spotify.SpotifySourceManager;
 import dev.benpetrillo.elixir.objects.Pair;
 import dev.benpetrillo.elixir.types.ElixirException;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.Utilities;
-import dev.benpetrillo.elixir.ElixirConstants;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.http.YoutubeOauth2Handler;
 import lombok.Getter;
@@ -62,19 +62,30 @@ import java.util.function.Consumer;
 public final class ElixirMusicManager {
 
     private static ElixirMusicManager instance;
-    private final Map<String, GuildMusicManager> musicManagers = new HashMap<>();
-    @Getter private final AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
-
     public final YoutubeAudioSourceManager youtubeSource = new YoutubeAudioSourceManager();
     public final SpotifySourceManager spotifySource = new SpotifySourceManager(youtubeSource);
     public final HttpAudioSourceManager httpSource = new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY);
     public final SoundCloudAudioSourceManager soundCloudSource = SoundCloudAudioSourceManager.createDefault();
-
-    @Getter @Setter
+    private final Map<String, GuildMusicManager> musicManagers = new HashMap<>();
+    @Getter
+    private final AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
+    @Getter
+    @Setter
     private boolean youtubeConfigured = false;
 
     public ElixirMusicManager() {
         this.configure();
+    }
+
+    /**
+     * @return The current, or new instance of the music manager.
+     */
+    public static ElixirMusicManager getInstance() {
+        if (instance == null) {
+            instance = new ElixirMusicManager();
+        }
+
+        return instance;
     }
 
     /**
@@ -103,10 +114,10 @@ public final class ElixirMusicManager {
 
         if (!ElixirConstants.IPV6_BLOCK.isEmpty()) {
             new YoutubeIpRotatorSetup(
-                    new NanoIpRoutePlanner(Collections.singletonList(new Ipv6Block(ElixirConstants.IPV6_BLOCK)), true))
-                    .forManager(this.audioPlayerManager)
-                    .withMainDelegateFilter(null)
-                    .setup();
+                new NanoIpRoutePlanner(Collections.singletonList(new Ipv6Block(ElixirConstants.IPV6_BLOCK)), true))
+                .forManager(this.audioPlayerManager)
+                .withMainDelegateFilter(null)
+                .setup();
             ElixirClient.logger.info("IPv6 rotator block set to {}.", ElixirConstants.IPV6_BLOCK);
         } else {
             ElixirClient.logger.warn("You are not using an IPv6 rotator. This may cause issues with YouTube and rate-limiting.");
@@ -147,14 +158,14 @@ public final class ElixirMusicManager {
         try {
             // Get the oauth2 handler instance.
             var handlerField = YoutubeAudioSourceManager.class
-                    .getDeclaredField("oauth2Handler");
+                .getDeclaredField("oauth2Handler");
             handlerField.setAccessible(true);
 
             var handler = handlerField.get(this.youtubeSource);
 
             // Get the device code method.
             var fetchDeviceCode = YoutubeOauth2Handler.class
-                    .getDeclaredMethod("fetchDeviceCode");
+                .getDeclaredMethod("fetchDeviceCode");
             fetchDeviceCode.setAccessible(true);
 
             // Invoke the method.
@@ -169,7 +180,7 @@ public final class ElixirMusicManager {
 
             // Get the poll method.
             var pollForToken = YoutubeOauth2Handler.class
-                    .getDeclaredMethod("pollForToken", String.class, long.class);
+                .getDeclaredMethod("pollForToken", String.class, long.class);
             pollForToken.setAccessible(true);
 
             // Begin thread to poll for token acceptance.
@@ -177,15 +188,16 @@ public final class ElixirMusicManager {
                 try {
                     // Poll for the token.
                     pollForToken.invoke(handler,
-                            deviceCode,
-                            interval == 0 ? 5000 : interval);
+                        deviceCode,
+                        interval == 0 ? 5000 : interval);
 
                     // Once the above method finishes, invoke the callback.
                     callback.accept(null);
 
                     // Set the YouTube configuration to true.
                     this.setYoutubeConfigured(true);
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
             }, "youtube-source-token-poller").start();
 
             return Pair.of(url, userCode);
@@ -244,9 +256,9 @@ public final class ElixirMusicManager {
                 final String title = track.getInfo().title;
                 final String shortenedTitle = title.length() > 60 ? title.substring(0, 60) + "..." : title;
                 MessageEmbed embed = new EmbedBuilder()
-                        .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                        .setDescription(String.format("**Queued:** [%s](%s)", shortenedTitle.replaceAll("\\[|]]", ""), track.getInfo().uri))
-                        .build();
+                    .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+                    .setDescription(String.format("**Queued:** [%s](%s)", shortenedTitle.replaceAll("\\[|]]", ""), track.getInfo().uri))
+                    .build();
                 interaction.reply(embed, false);
             }
 
@@ -263,17 +275,17 @@ public final class ElixirMusicManager {
                     final String title = tracks.get(0).getInfo().title;
                     final String shortenedTitle = title.length() > 60 ? title.substring(0, 60) + "..." : title;
                     MessageEmbed embed = new EmbedBuilder()
-                            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                            .setDescription(String.format("**Queued:** [%s](%s)", shortenedTitle.replaceAll("\\[|]]", ""), tracks.get(0).getInfo().uri))
-                            .build();
+                        .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+                        .setDescription(String.format("**Queued:** [%s](%s)", shortenedTitle.replaceAll("\\[|]]", ""), tracks.get(0).getInfo().uri))
+                        .build();
                     interaction.reply(embed, false);
                     musicManager.scheduler.queue(tracks.get(0));
                 } else {
                     final String success = String.format("Queued **%s** tracks from [%s](%s).", tracks.size(), playlist.getName(), url);
                     MessageEmbed embed = new EmbedBuilder()
-                            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                            .setDescription(success)
-                            .build();
+                        .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+                        .setDescription(success)
+                        .build();
                     interaction.reply(embed);
                     for (final AudioTrack track : tracks) {
                         assert interaction.getMember() != null;
@@ -335,16 +347,5 @@ public final class ElixirMusicManager {
                 Utilities.throwThrowable(new ElixirException().guild(guild).exception(e));
             }
         });
-    }
-
-    /**
-     * @return The current, or new instance of the music manager.
-     */
-    public static ElixirMusicManager getInstance() {
-        if (instance == null) {
-            instance = new ElixirMusicManager();
-        }
-
-        return instance;
     }
 }

@@ -20,11 +20,11 @@ package dev.benpetrillo.elixir.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.managers.ElixirMusicManager;
 import dev.benpetrillo.elixir.managers.GuildMusicManager;
 import dev.benpetrillo.elixir.utils.AudioUtil;
 import dev.benpetrillo.elixir.utils.Embed;
-import dev.benpetrillo.elixir.ElixirConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
 import tech.xigam.cch.command.Command;
 import tech.xigam.cch.utils.Interaction;
@@ -61,8 +61,8 @@ public final class ShuffleCommand extends Command {
         }
 
         interaction.reply(new EmbedBuilder().setTitle("New Queue:")
-                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                .setAuthor("Shuffled the queue.")
-                .setDescription(description).build(), false);
+            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+            .setAuthor("Shuffled the queue.")
+            .setDescription(description).build(), false);
     }
 }

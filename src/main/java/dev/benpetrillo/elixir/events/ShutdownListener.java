@@ -41,7 +41,8 @@ public final class ShutdownListener extends ListenerAdapter {
                 final AudioManager audioManager = voiceChannel.getGuild().getAudioManager();
                 audioManager.closeAudioConnection();
 
-            } catch (NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {
+            }
         }
     }
 }

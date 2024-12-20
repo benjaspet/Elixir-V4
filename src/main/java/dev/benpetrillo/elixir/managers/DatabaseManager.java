@@ -17,21 +17,22 @@
 
 package dev.benpetrillo.elixir.managers;
 
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoClient;
-
 import dev.benpetrillo.elixir.Config;
 import dev.benpetrillo.elixir.ElixirClient;
-import org.bson.Document;
 import lombok.Getter;
+import org.bson.Document;
 
 public final class DatabaseManager {
 
     private static MongoClient client;
-    @Getter private static MongoCollection<Document> playlists;
-    @Getter private static MongoCollection<Document> apiKeys;
+    @Getter
+    private static MongoCollection<Document> playlists;
+    @Getter
+    private static MongoCollection<Document> apiKeys;
 
     public static void create() {
         String uri = Config.get("MONGO-URI");

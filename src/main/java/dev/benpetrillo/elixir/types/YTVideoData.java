@@ -38,7 +38,7 @@ public final class YTVideoData {
             public String channelTitle, liveBroadcastContent;
             public Map<String, String> localized;
         }
-        
+
         public static class ContentDetails {
             public String duration, dimension, definition, caption, licensedContent;
             public JsonObject contentRating;

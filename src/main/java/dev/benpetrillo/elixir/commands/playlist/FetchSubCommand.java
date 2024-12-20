@@ -20,11 +20,11 @@ package dev.benpetrillo.elixir.commands.playlist;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.music.playlist.PlaylistTrack;
 import dev.benpetrillo.elixir.types.CustomPlaylist;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.PlaylistUtil;
-import dev.benpetrillo.elixir.ElixirConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -47,7 +47,8 @@ public final class FetchSubCommand extends SubCommand implements Arguments {
     public void execute(Interaction interaction) {
         interaction.deferReply();
         final String playlistId = interaction.getArgument("id", String.class);
-        int page = interaction.getArgument("page", 1L, Long.class).intValue(); if(page == 0) page = 1;
+        int page = interaction.getArgument("page", 1L, Long.class).intValue();
+        if (page == 0) page = 1;
         final CustomPlaylist playlist = PlaylistUtil.findPlaylist(playlistId);
         if (playlist == null) {
             interaction.reply(Embed.error("Unable to find a playlist of id `" + playlistId + "`."), false);
@@ -69,28 +70,28 @@ public final class FetchSubCommand extends SubCommand implements Arguments {
             description.append("\n").append(String.format("...and %s more tracks.", tracks.size() - maxAmount));
         }
         final String settings = """
-                            Shuffle: %s
-                            Repeat: %s
-                            """.formatted(playlist.options.shuffle ? "Yes" : "No", playlist.options.repeat ? "Yes" : "No");
+            Shuffle: %s
+            Repeat: %s
+            """.formatted(playlist.options.shuffle ? "Yes" : "No", playlist.options.repeat ? "Yes" : "No");
         MessageEmbed embed = new EmbedBuilder()
-                .setTitle(playlist.info.name)
-                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                .setThumbnail(thumbnail)
-                .setDescription("Author: <@%s>".formatted(playlist.info.author) )
-                .addField("Description", playlist.info.description, false)
-                .addField("Queue Settings", String.valueOf(settings), false)
-                .addField("Sample Tracks", String.valueOf(description), false)
-                .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
-                .setTimestamp(new Date().toInstant())
-                .build();
+            .setTitle(playlist.info.name)
+            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+            .setThumbnail(thumbnail)
+            .setDescription("Author: <@%s>".formatted(playlist.info.author))
+            .addField("Description", playlist.info.description, false)
+            .addField("Queue Settings", String.valueOf(settings), false)
+            .addField("Sample Tracks", String.valueOf(description), false)
+            .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
+            .setTimestamp(new Date().toInstant())
+            .build();
         interaction.reply(embed, false);
     }
 
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
-                Argument.create("page", "The page number to fetch.", "page", OptionType.INTEGER, false, 1).range(1, 100)
+            Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
+            Argument.create("page", "The page number to fetch.", "page", OptionType.INTEGER, false, 1).range(1, 100)
         );
     }
 }

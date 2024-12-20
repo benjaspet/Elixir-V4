@@ -23,7 +23,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 public class ExtendedAudioTrackInfo extends AudioTrackInfo {
 
     public String isrc;
-    
+
     public ExtendedAudioTrackInfo(String title, String author, long length, String identifier, boolean isStream, String uri) {
         super(title, author, length, identifier, isStream, uri);
     }

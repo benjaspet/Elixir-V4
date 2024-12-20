@@ -55,7 +55,8 @@ public final class QueueSubCommand extends SubCommand implements Arguments {
             return;
         }
         interaction.deferReply();
-        final Member member = interaction.getMember(); Guild guild = interaction.getGuild();
+        final Member member = interaction.getMember();
+        Guild guild = interaction.getGuild();
         final String playlistId = interaction.getArgument("id", String.class);
         final CustomPlaylist playlist = PlaylistUtil.findPlaylist(playlistId);
         if (playlist == null) {
@@ -63,13 +64,15 @@ public final class QueueSubCommand extends SubCommand implements Arguments {
             return;
         }
         assert member != null;
-        final GuildVoiceState memberVoiceState = member.getVoiceState(); assert memberVoiceState != null;
+        final GuildVoiceState memberVoiceState = member.getVoiceState();
+        assert memberVoiceState != null;
         if (!memberVoiceState.inAudioChannel()) {
             interaction.reply(Embed.error("You must be in a voice channel to queue tracks."), false);
             return;
         }
         assert guild != null;
-        final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState(); assert voiceState != null;
+        final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
+        assert voiceState != null;
         final AudioManager audioManager = guild.getAudioManager();
         final VoiceChannel audioChannel = Objects.requireNonNull(memberVoiceState.getChannel()).asVoiceChannel();
         if (!voiceState.inAudioChannel()) {
@@ -92,7 +95,7 @@ public final class QueueSubCommand extends SubCommand implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0)
+            Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0)
         );
     }
 }

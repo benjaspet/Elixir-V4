@@ -65,7 +65,7 @@ public final class MoveQueueCommand extends Command implements Arguments {
         final GuildMusicManager sourceMusicManager = ElixirMusicManager.getInstance().getMusicManager(interaction.getGuild());
         final BlockingQueue<AudioTrack> sourceQueue = sourceMusicManager.scheduler.queue;
         final AudioPlayer sourcePlayer = sourceMusicManager.audioPlayer;
-        targetQueue.addAll(sourceQueue); 
+        targetQueue.addAll(sourceQueue);
         targetPlayer.setVolume(sourcePlayer.getVolume());
         final AudioTrack newTrack = sourcePlayer.getPlayingTrack().makeClone();
         newTrack.setPosition(sourcePlayer.getPlayingTrack().getPosition());
@@ -81,7 +81,7 @@ public final class MoveQueueCommand extends Command implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("guild", "The guild to move the queue to.", "guild", OptionType.STRING, true, 0)
+            Argument.create("guild", "The guild to move the queue to.", "guild", OptionType.STRING, true, 0)
         );
     }
 }

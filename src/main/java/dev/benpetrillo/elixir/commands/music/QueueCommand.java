@@ -21,12 +21,12 @@ package dev.benpetrillo.elixir.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.managers.ElixirMusicManager;
 import dev.benpetrillo.elixir.managers.GuildMusicManager;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.TrackUtil;
 import dev.benpetrillo.elixir.utils.Utilities;
-import dev.benpetrillo.elixir.ElixirConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -77,17 +77,17 @@ public final class QueueCommand extends Command {
             final String nowPlayingTitle = nowPlaying.getInfo().title;
             final String nowPlayingTrimmed = nowPlayingTitle.length() > 55 ? nowPlayingTitle.substring(0, 52) + "..." : nowPlayingTitle;
             final String queueData = "• Tracks queued: %s\n• Loop mode: %s\n• Volume: %s".formatted(
-                    queue.size(), Utilities.prettyPrint(musicManager.scheduler.repeating.toString()), musicManager.audioPlayer.getVolume());
+                queue.size(), Utilities.prettyPrint(musicManager.scheduler.repeating.toString()), musicManager.audioPlayer.getVolume());
             MessageEmbed embed = new EmbedBuilder()
-                    .setTitle("Guild Queue")
-                    .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                    .setAuthor("Now Playing: " + nowPlayingTrimmed, nowPlaying.getInfo().uri)
-                    .setThumbnail(thumbnail)
-                    .setDescription(description)
-                    .addField("Queue Data", queueData, false)
-                    .setFooter("Elixir Music", ElixirClient.getInstance().jda.getSelfUser().getAvatarUrl())
-                    .setTimestamp(new Date().toInstant())
-                    .build();
+                .setTitle("Guild Queue")
+                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+                .setAuthor("Now Playing: " + nowPlayingTrimmed, nowPlaying.getInfo().uri)
+                .setThumbnail(thumbnail)
+                .setDescription(description)
+                .addField("Queue Data", queueData, false)
+                .setFooter("Elixir Music", ElixirClient.getInstance().jda.getSelfUser().getAvatarUrl())
+                .setTimestamp(new Date().toInstant())
+                .build();
             interaction.reply(embed, false);
         } catch (PermissionException ignored) {
             interaction.reply(Embed.error("An error occurred while running this command."), false);

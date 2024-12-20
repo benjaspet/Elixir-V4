@@ -18,11 +18,11 @@
 
 package dev.benpetrillo.elixir.commands.playlist;
 
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.types.CustomPlaylist;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.PlaylistUtil;
 import dev.benpetrillo.elixir.utils.Utilities;
-import dev.benpetrillo.elixir.ElixirConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import tech.xigam.cch.command.Arguments;
@@ -65,9 +65,9 @@ public final class SettingSubCommand extends SubCommand implements Arguments {
                 }
                 PlaylistUtil.setPlaylistCover(playlist, value);
                 interaction.reply(new EmbedBuilder()
-                        .setDescription("Successfully swapped the playlist cover!")
-                        .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                        .setImage(value).build());
+                    .setDescription("Successfully swapped the playlist cover!")
+                    .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+                    .setImage(value).build());
             }
             case "name" -> {
                 PlaylistUtil.setPlaylistName(playlist, value);
@@ -76,9 +76,9 @@ public final class SettingSubCommand extends SubCommand implements Arguments {
             case "description" -> {
                 PlaylistUtil.setPlaylistDescription(playlist, value);
                 interaction.reply(new EmbedBuilder()
-                        .setDescription("Successfully swapped the playlist description!")
-                        .addField("New Description", value, false)
-                        .setColor(ElixirConstants.DEFAULT_EMBED_COLOR).build(), false);
+                    .setDescription("Successfully swapped the playlist description!")
+                    .addField("New Description", value, false)
+                    .setColor(ElixirConstants.DEFAULT_EMBED_COLOR).build(), false);
             }
             case "shuffle" -> {
                 PlaylistUtil.setPlaylistSetting(PlaylistUtil.Setting.SHUFFLE, playlist, Utilities.parseBoolean(value));
@@ -101,9 +101,9 @@ public final class SettingSubCommand extends SubCommand implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
-                Argument.createWithChoices("setting", "The setting to change.", "setting", OptionType.STRING, true, 1, "shuffle", "repeat", "volume", "name", "description", "cover", "volume"),
-                Argument.createTrailingArgument("value", "The new value.", "value", OptionType.STRING, true, 2)
+            Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
+            Argument.createWithChoices("setting", "The setting to change.", "setting", OptionType.STRING, true, 1, "shuffle", "repeat", "volume", "name", "description", "cover", "volume"),
+            Argument.createTrailingArgument("value", "The new value.", "value", OptionType.STRING, true, 2)
         );
     }
 }

@@ -22,13 +22,13 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.managers.ElixirMusicManager;
 import dev.benpetrillo.elixir.managers.GuildMusicManager;
 import dev.benpetrillo.elixir.types.ElixirException;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.TrackUtil;
 import dev.benpetrillo.elixir.utils.Utilities;
-import dev.benpetrillo.elixir.ElixirConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -67,20 +67,20 @@ public final class NowPlayingCommand extends Command {
                 final String url = info.uri;
                 final String requestedBy = "<@" + track.getUserData(String.class) + ">";
                 final String contents = """
-                            • Artist: %s
-                            • Requested by: %s
-                            • Duration: %s
-                            • Livestream: %s
-                            """.formatted(artist, requestedBy, duration, isLive);
+                    • Artist: %s
+                    • Requested by: %s
+                    • Duration: %s
+                    • Livestream: %s
+                    """.formatted(artist, requestedBy, duration, isLive);
                 MessageEmbed embed = new EmbedBuilder()
-                        .setTitle("Currently Playing")
-                        .setDescription(String.format("[%s](%s)", title, url))
-                        .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                        .addField("Track Data", contents, false)
-                        .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
-                        .setTimestamp(new Date().toInstant())
-                        .setThumbnail(thumbnail)
-                        .build();
+                    .setTitle("Currently Playing")
+                    .setDescription(String.format("[%s](%s)", title, url))
+                    .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+                    .addField("Track Data", contents, false)
+                    .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
+                    .setTimestamp(new Date().toInstant())
+                    .setThumbnail(thumbnail)
+                    .build();
                 interaction.reply(embed, false);
             }
         } catch (PermissionException ignored) {

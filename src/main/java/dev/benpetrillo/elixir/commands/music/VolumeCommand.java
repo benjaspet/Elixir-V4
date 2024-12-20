@@ -57,8 +57,8 @@ public final class VolumeCommand extends Command implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("volume", "Set the volume of the player.", "volume",
-                        OptionType.INTEGER, true, 0).range(0, 150)
+            Argument.create("volume", "Set the volume of the player.", "volume",
+                OptionType.INTEGER, true, 0).range(0, 150)
         );
     }
 }

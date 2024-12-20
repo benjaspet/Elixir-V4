@@ -30,8 +30,8 @@ public final class ConfigureCommand extends Command implements Arguments {
         // Check if YouTube is configured.
         if (musicManager.isYoutubeConfigured() && !delete) {
             interaction
-                    .setEphemeral()
-                    .reply(Embed.error("YouTube is already configured."));
+                .setEphemeral()
+                .reply(Embed.error("YouTube is already configured."));
             return;
         }
 
@@ -41,8 +41,8 @@ public final class ConfigureCommand extends Command implements Arguments {
             try {
                 var hook = interaction.getSlashExecutor().getHook();
                 hook
-                        .editOriginalEmbeds(Embed.def("Authorization flow completed!"))
-                        .queue();
+                    .editOriginalEmbeds(Embed.def("Authorization flow completed!"))
+                    .queue();
 
                 // Save the authorization credentials.
                 musicManager.saveCredentials();
@@ -54,8 +54,8 @@ public final class ConfigureCommand extends Command implements Arguments {
         // Check if the code is valid.
         if (pair == null) {
             interaction
-                    .setEphemeral()
-                    .reply(Embed.error("Invalid authorization code."));
+                .setEphemeral()
+                .reply(Embed.error("Invalid authorization code."));
             return;
         }
 
@@ -63,15 +63,15 @@ public final class ConfigureCommand extends Command implements Arguments {
         var url = pair.a();
         var code = pair.b();
         interaction.reply(Embed.def(
-                "Please authorize [here](<%s>) with the code `%s`."
-                        .formatted(url, code))
+            "Please authorize [here](<%s>) with the code `%s`."
+                .formatted(url, code))
         );
     }
 
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("delete", "Ignores any existing credentials.", "delete", OptionType.BOOLEAN, false, 0)
+            Argument.create("delete", "Ignores any existing credentials.", "delete", OptionType.BOOLEAN, false, 0)
         );
     }
 }

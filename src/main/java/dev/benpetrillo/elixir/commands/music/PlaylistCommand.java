@@ -38,7 +38,7 @@ public final class PlaylistCommand extends Command implements Baseless {
         registerSubCommand(new ImportSubCommand());
         registerSubCommand(new ListSubCommand());
     }
-    
+
     @Override
     public void execute(Interaction interaction) {
         interaction.reply(Embed.error("Cannot execute this command."), false);

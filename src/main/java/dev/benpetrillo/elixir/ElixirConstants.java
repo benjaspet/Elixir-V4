@@ -21,7 +21,9 @@ import java.nio.file.Path;
 
 public final class ElixirConstants {
     public static final Path YT_CREDENTIALS = Path.of("yt-credentials.txt");
-
+    public static final String INVITE = "https://discord.com/api/oauth2/authorize?client_id={}&permissions=274881333504&scope=bot%20applications.commands";
+    public static final boolean DEPLOY_GUILD = Boolean.parseBoolean(Config.get("DEPLOY-APPLICATION-COMMANDS-GUILD"));
+    public static final boolean DEPLOY_GLOBAL = Boolean.parseBoolean(Config.get("DEPLOY-APPLICATION-COMMANDS-GLOBAL"));
     public static String TOKEN = Config.get("TOKEN");
     public static String ACTIVITY = Config.get("ACTIVITY");
     public static String YOUTUBE_API_KEY = Config.get("YOUTUBE-API-KEY");
@@ -35,8 +37,4 @@ public final class ElixirConstants {
     public static String[] GUILDS = Config.get("GUILDS").split(",");
     public static Color DEFAULT_EMBED_COLOR = Color.decode(Config.get("DEFAULT-EMBED-COLOR"));
     public static Color ERROR_EMBED_COLOR = Color.decode(Config.get("ERROR-EMBED-COLOR"));
-    public static final String INVITE = "https://discord.com/api/oauth2/authorize?client_id={}&permissions=274881333504&scope=bot%20applications.commands";
-
-    public static final boolean DEPLOY_GUILD = Boolean.parseBoolean(Config.get("DEPLOY-APPLICATION-COMMANDS-GUILD"));
-    public static final boolean DEPLOY_GLOBAL = Boolean.parseBoolean(Config.get("DEPLOY-APPLICATION-COMMANDS-GLOBAL"));
 }

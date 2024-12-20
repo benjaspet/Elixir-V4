@@ -19,11 +19,11 @@
 package dev.benpetrillo.elixir.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.managers.ElixirMusicManager;
 import dev.benpetrillo.elixir.managers.LyricManager;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.Utilities;
-import dev.benpetrillo.elixir.ElixirConstants;
 import genius.SongSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -51,8 +51,8 @@ public final class LyricsCommand extends Command implements Arguments {
         if (song.isEmpty()) {
             assert interaction.getGuild() != null;
             AudioTrack track = ElixirMusicManager.getInstance()
-                    .getMusicManager(interaction.getGuild())
-                    .audioPlayer.getPlayingTrack();
+                .getMusicManager(interaction.getGuild())
+                .audioPlayer.getPlayingTrack();
             if (track == null) {
                 interaction.reply(Embed.error("There is not a song playing."), false);
                 return;
@@ -62,13 +62,13 @@ public final class LyricsCommand extends Command implements Arguments {
             SongSearch result = LyricManager.getTrackData(song);
             SongSearch.Hit shortened = result.getHits().get(0);
             MessageEmbed embed = new EmbedBuilder()
-                    .setTitle(shortened.getTitle())
-                    .setThumbnail(shortened.getThumbnailUrl())
-                    .setDescription(Utilities.shorten(shortened.fetchLyrics()))
-                    .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                    .setFooter("Lyrics Powered by Genius", "https://images.rapgenius.com/365f0e9e7e66a120867b7b0ff340264a.750x750x1.png")
-                    .setTimestamp(new Date().toInstant())
-                    .build();
+                .setTitle(shortened.getTitle())
+                .setThumbnail(shortened.getThumbnailUrl())
+                .setDescription(Utilities.shorten(shortened.fetchLyrics()))
+                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+                .setFooter("Lyrics Powered by Genius", "https://images.rapgenius.com/365f0e9e7e66a120867b7b0ff340264a.750x750x1.png")
+                .setTimestamp(new Date().toInstant())
+                .build();
             interaction.reply(embed);
         } catch (IOException | IndexOutOfBoundsException exception) {
             interaction.reply(Embed.error("Unable to fetch lyrics for that track."), false);
@@ -78,7 +78,7 @@ public final class LyricsCommand extends Command implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.createTrailingArgument("song", "The song to fetch the lyrics of.", "song", OptionType.STRING, false, 0)
+            Argument.createTrailingArgument("song", "The song to fetch the lyrics of.", "song", OptionType.STRING, false, 0)
         );
     }
 }

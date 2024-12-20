@@ -41,7 +41,8 @@ public final class JoinCommand extends Command {
         final GuildVoiceState voiceState = interaction.getGuild().getSelfMember().getVoiceState();
         assert interaction.getMember() != null;
         final GuildVoiceState memberVoiceState = interaction.getMember().getVoiceState();
-        assert memberVoiceState != null; interaction.deferReply();
+        assert memberVoiceState != null;
+        interaction.deferReply();
         if (!memberVoiceState.inAudioChannel()) {
             interaction.reply(Embed.error("You must be in a voice channel to run this command."), false);
             return;

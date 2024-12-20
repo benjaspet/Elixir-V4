@@ -28,10 +28,10 @@ import net.dv8tion.jda.api.entities.Guild;
 @Getter
 public final class GuildMusicManager {
 
-    private final Guild guild;
     public final AudioPlayer audioPlayer;
     @Getter
     public final TrackScheduler scheduler;
+    private final Guild guild;
 
     public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
         this.guild = guild;

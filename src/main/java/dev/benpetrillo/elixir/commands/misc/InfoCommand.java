@@ -18,9 +18,9 @@ package dev.benpetrillo.elixir.commands.misc;
 
 import com.sun.management.OperatingSystemMXBean;
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.managers.ElixirMusicManager;
 import dev.benpetrillo.elixir.utils.Utilities;
-import dev.benpetrillo.elixir.ElixirConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
 import tech.xigam.cch.command.Command;
 import tech.xigam.cch.utils.Interaction;
@@ -30,7 +30,7 @@ import java.time.OffsetDateTime;
 
 public final class InfoCommand extends Command {
     private static final String INVITE = ElixirConstants.INVITE
-            .replace("{}", ElixirClient.getId());
+        .replace("{}", ElixirClient.getId());
 
     public InfoCommand() {
         super("info", "Get information about Elixir.");
@@ -38,7 +38,8 @@ public final class InfoCommand extends Command {
 
     @Override
     public void execute(Interaction interaction) {
-        var streams = 0; var users = 0;
+        var streams = 0;
+        var users = 0;
         var servers = ElixirClient.getInstance().jda.getGuilds().size();
         for (var musicManager : ElixirMusicManager.getInstance().getMusicManagers()) {
             streams += musicManager.audioPlayer.getPlayingTrack() != null ? 1 : 0;
@@ -69,24 +70,24 @@ public final class InfoCommand extends Command {
 
         var uptimeString = "%dd %dh %dm %ds".formatted(days, hours, minutes, seconds);
         final EmbedBuilder embed = new EmbedBuilder()
-                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                .setAuthor("Total Playing Streams: " + streams)
-                .setDescription("[Invite Elixir to your server!](" + INVITE + ")")
-                .addField("Bot Information", """
-                        • Powered by: %s
-                        • Developed by: Ponjo Studios
-                        • Server count: %s
-                        • User count: %s
-                        • Uptime: %s
-                        """.formatted(Utilities.getJDAVersion(), servers, users, uptimeString), false)
-                .addField("Host Information", """
-                        • CPU Usage: %s%%
-                        • CPU Cores: %s
-                        • Threads: %s
-                        • Total Memory: %s MB
-                        """.formatted(cpuUsage, cores, threads, memory), false)
-                .setFooter("Elixir Music", ElixirClient.getInstance().jda.getSelfUser().getEffectiveAvatarUrl())
-                .setTimestamp(OffsetDateTime.now());
+            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+            .setAuthor("Total Playing Streams: " + streams)
+            .setDescription("[Invite Elixir to your server!](" + INVITE + ")")
+            .addField("Bot Information", """
+                • Powered by: %s
+                • Developed by: Ponjo Studios
+                • Server count: %s
+                • User count: %s
+                • Uptime: %s
+                """.formatted(Utilities.getJDAVersion(), servers, users, uptimeString), false)
+            .addField("Host Information", """
+                • CPU Usage: %s%%
+                • CPU Cores: %s
+                • Threads: %s
+                • Total Memory: %s MB
+                """.formatted(cpuUsage, cores, threads, memory), false)
+            .setFooter("Elixir Music", ElixirClient.getInstance().jda.getSelfUser().getEffectiveAvatarUrl())
+            .setTimestamp(OffsetDateTime.now());
         interaction.reply(embed.build(), false);
     }
 }

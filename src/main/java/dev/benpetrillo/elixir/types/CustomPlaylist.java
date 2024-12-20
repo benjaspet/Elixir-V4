@@ -26,6 +26,10 @@ import java.util.List;
 
 public final class CustomPlaylist {
 
+    public Info info;
+    public List<CustomPlaylistTrack> tracks;
+    public Options options;
+
     public static CustomPlaylist create(String playlistId, Member creator) {
         CustomPlaylist playlist = new CustomPlaylist();
         playlist.info = new Info();
@@ -38,22 +42,18 @@ public final class CustomPlaylist {
         playlist.info.author = creator.getId();
         return playlist;
     }
-    
-    public Info info;
-    public List<CustomPlaylistTrack> tracks;
-    public Options options;
-    
+
     public static class Info {
         public String id, name, description, playlistCoverUrl, author;
         public int volume = 100;
     }
-    
+
     public static class CustomPlaylistTrack {
 
         public String title, url, artist, coverArt;
         public long duration;
         public String isrc = null;
-        
+
         public static CustomPlaylistTrack from(AudioTrackInfo info) {
             CustomPlaylistTrack track = new CustomPlaylistTrack();
             track.title = info.title;
@@ -67,7 +67,7 @@ public final class CustomPlaylist {
             return track;
         }
     }
-    
+
     public static class Options {
         public boolean shuffle = false, repeat = false;
     }

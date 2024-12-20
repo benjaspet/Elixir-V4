@@ -19,7 +19,9 @@ package dev.benpetrillo.elixir.music.playlist;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
 import dev.benpetrillo.elixir.music.spotify.SpotifySourceManager;
 import dev.benpetrillo.elixir.music.spotify.SpotifyTrack;
@@ -38,12 +40,12 @@ public final class PlaylistTrack extends DelegatedAudioTrack {
 
     public PlaylistTrack(String title, CustomPlaylistTrack from, AudioSourceManager sourceManager) {
         super(new AudioTrackInfo(
-                title, from.artist, from.duration,
-                switch(TrackUtil.determineTrackType(from.url)) {
-                    default -> from.url;
-                    case YOUTUBE -> Utilities.extractVideoId(from.url);
-                    case SPOTIFY -> Utilities.extractSongId(from.url);
-                }, false, from.url
+            title, from.artist, from.duration,
+            switch (TrackUtil.determineTrackType(from.url)) {
+                default -> from.url;
+                case YOUTUBE -> Utilities.extractVideoId(from.url);
+                case SPOTIFY -> Utilities.extractSongId(from.url);
+            }, false, from.url
         ));
         this.isrc = from.isrc;
         this.sourceManager = sourceManager;
@@ -57,18 +59,21 @@ public final class PlaylistTrack extends DelegatedAudioTrack {
         switch (TrackUtil.determineTrackType(this.getInfo().uri)) {
             case YOUTUBE -> {
                 track = new YoutubeAudioTrack(
-                        this.trackInfo, (YoutubeAudioSourceManager) this.sourceManager
-                ); this.length = track.getDuration();
+                    this.trackInfo, (YoutubeAudioSourceManager) this.sourceManager
+                );
+                this.length = track.getDuration();
             }
             case SPOTIFY -> {
                 track = new SpotifyTrack(
-                        this.trackInfo, this.isrc, this.trackObject.coverArt, (SpotifySourceManager) this.sourceManager
-                ); this.length = track.getDuration();
+                    this.trackInfo, this.isrc, this.trackObject.coverArt, (SpotifySourceManager) this.sourceManager
+                );
+                this.length = track.getDuration();
             }
             case SOUNDCLOUD -> {
                 track = new SoundCloudAudioTrack(
-                        this.trackInfo, (SoundCloudAudioSourceManager) this.sourceManager
-                ); this.length = track.getDuration();
+                    this.trackInfo, (SoundCloudAudioSourceManager) this.sourceManager
+                );
+                this.length = track.getDuration();
             }
         }
         if (track != null) track.process(executor);

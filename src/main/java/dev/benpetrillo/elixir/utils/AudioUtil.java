@@ -37,11 +37,13 @@ public final class AudioUtil {
      */
 
     public static FailureReason simpleAudioCheck(Guild guild, Member member) {
-        final GuildVoiceState selfVoiceState = guild.getSelfMember().getVoiceState(); assert selfVoiceState != null;
+        final GuildVoiceState selfVoiceState = guild.getSelfMember().getVoiceState();
+        assert selfVoiceState != null;
         if (member == null) {
             return selfVoiceState.inAudioChannel() ? FailureReason.PASSED : FailureReason.BOT_NOT_IN_VOICE_CHANNEL;
         } else {
-            final GuildVoiceState memberVoiceState = member.getVoiceState(); assert memberVoiceState != null;
+            final GuildVoiceState memberVoiceState = member.getVoiceState();
+            assert memberVoiceState != null;
             if (!memberVoiceState.inAudioChannel()) {
                 return FailureReason.MEMBER_NOT_IN_VOICE_CHANNEL;
             }
@@ -50,7 +52,8 @@ public final class AudioUtil {
             }
             if (!Objects.equals(selfVoiceState.getChannel(), memberVoiceState.getChannel())) {
                 return FailureReason.BOT_NOT_IN_SAME_VOICE_CHANNEL;
-            } return FailureReason.PASSED;
+            }
+            return FailureReason.PASSED;
         }
     }
 
@@ -74,14 +77,15 @@ public final class AudioUtil {
                 interaction.reply(Embed.error("You need to be in my voice channel."));
                 return true;
             }
-        } return false;
+        }
+        return false;
     }
-    
+
     public static FailureReason simplePlayerCheck(Guild guild) {
         final GuildMusicManager musicManager = ElixirMusicManager.getInstance().getMusicManager(guild);
         return musicManager.audioPlayer.getPlayingTrack() == null ? FailureReason.BOT_IS_NOT_PLAYING : FailureReason.PASSED;
     }
-    
+
     public static boolean playerCheck(Interaction interaction, ReturnMessage message) {
         if (message == null) {
             message = ReturnMessage.NO_QUEUE;
@@ -89,9 +93,10 @@ public final class AudioUtil {
         AudioUtil.FailureReason reason = AudioUtil.simplePlayerCheck(interaction.getGuild());
         if (reason == FailureReason.BOT_IS_NOT_PLAYING) {
             interaction.reply(Embed.error(message.getContents()));
-        } return reason != FailureReason.PASSED;
+        }
+        return reason != FailureReason.PASSED;
     }
-    
+
     public enum FailureReason {
         PASSED,
         BOT_IS_NOT_PLAYING,
@@ -99,7 +104,7 @@ public final class AudioUtil {
         MEMBER_NOT_IN_VOICE_CHANNEL,
         BOT_NOT_IN_SAME_VOICE_CHANNEL
     }
-    
+
     public enum ReturnMessage {
 
         NO_QUEUE("There's no queue in this server."),
@@ -110,7 +115,9 @@ public final class AudioUtil {
         ReturnMessage(String contents) {
             this.contents = contents;
         }
-        
-        public String getContents() { return contents; }
+
+        public String getContents() {
+            return contents;
+        }
     }
 }

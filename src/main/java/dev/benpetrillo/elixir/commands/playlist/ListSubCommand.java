@@ -19,10 +19,10 @@
 package dev.benpetrillo.elixir.commands.playlist;
 
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.types.CustomPlaylist;
 import dev.benpetrillo.elixir.utils.Embed;
 import dev.benpetrillo.elixir.utils.PlaylistUtil;
-import dev.benpetrillo.elixir.ElixirConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import tech.xigam.cch.command.Arguments;
@@ -52,10 +52,10 @@ public final class ListSubCommand extends SubCommand implements Arguments {
             return;
         }
         final EmbedBuilder embed = new EmbedBuilder()
-                .setTitle("Elixir Playlists")
-                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
-                .setTimestamp(OffsetDateTime.now());
+            .setTitle("Elixir Playlists")
+            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+            .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
+            .setTimestamp(OffsetDateTime.now());
         final StringBuilder description = new StringBuilder();
         for (int i = (page - 1) * maxAmount; i < page * maxAmount && i < playlists.size(); i++) {
             CustomPlaylist playlist = playlists.get(i);
@@ -72,8 +72,8 @@ public final class ListSubCommand extends SubCommand implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("page", "The page number to fetch.", "page", OptionType.INTEGER, false, 0)
-                        .range(1, 100)
+            Argument.create("page", "The page number to fetch.", "page", OptionType.INTEGER, false, 0)
+                .range(1, 100)
         );
     }
 }

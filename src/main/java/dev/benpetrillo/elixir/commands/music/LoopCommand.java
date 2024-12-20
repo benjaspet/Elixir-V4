@@ -73,10 +73,11 @@ public final class LoopCommand extends Command implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         Argument argument = Argument.createWithChoices(
-                "mode", "Loop mode", "mode",
-                OptionType.STRING, true, 0,
-                "Track Loop", "Queue Loop", "Disable Loop"
-        ); argument.trailing = true;
+            "mode", "Loop mode", "mode",
+            OptionType.STRING, true, 0,
+            "Track Loop", "Queue Loop", "Disable Loop"
+        );
+        argument.trailing = true;
         return List.of(argument);
     }
 }

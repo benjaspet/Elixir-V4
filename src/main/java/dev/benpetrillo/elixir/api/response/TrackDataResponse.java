@@ -25,16 +25,16 @@ public record TrackDataResponse(
     String title, String author, long duration, String formattedDuration, String uri,
     String thumbnail, long position, boolean isStream, String identifier, String requestedBy) {
 
-  public static TrackDataResponse create(AudioTrack track) {
+    public static TrackDataResponse create(AudioTrack track) {
 
-    final long position = track.getPosition();
-    final AudioTrackInfo trackInfo = track.getInfo();
+        final long position = track.getPosition();
+        final AudioTrackInfo trackInfo = track.getInfo();
 
-    return new TrackDataResponse(
-        trackInfo.title, trackInfo.author, trackInfo.length / 1000,
-        Utilities.formatDuration(position) + "/" + Utilities.formatDuration(trackInfo.length),
-        trackInfo.uri, TrackUtil.getCoverArt(trackInfo), track.getPosition(),
-        trackInfo.isStream, trackInfo.identifier, track.getUserData(String.class)
-    );
-  }
+        return new TrackDataResponse(
+            trackInfo.title, trackInfo.author, trackInfo.length / 1000,
+            Utilities.formatDuration(position) + "/" + Utilities.formatDuration(trackInfo.length),
+            trackInfo.uri, TrackUtil.getCoverArt(trackInfo), track.getPosition(),
+            trackInfo.isStream, trackInfo.identifier, track.getUserData(String.class)
+        );
+    }
 }

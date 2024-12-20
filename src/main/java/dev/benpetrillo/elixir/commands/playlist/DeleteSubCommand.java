@@ -57,7 +57,7 @@ public final class DeleteSubCommand extends SubCommand implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0)
+            Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0)
         );
     }
 }

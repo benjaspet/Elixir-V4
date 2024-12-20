@@ -65,14 +65,18 @@ public final class SpotifySourceManager implements AudioSourceManager {
 
     public static void authorize() throws IOException, ParseException, SpotifyWebApiException {
         spotify = new SpotifyApi.Builder()
-                .setClientId(Config.get("SPOTIFY-CLIENT-ID"))
-                .setClientSecret(Config.get("SPOTIFY-CLIENT-SECRET"))
-                .build();
+            .setClientId(Config.get("SPOTIFY-CLIENT-ID"))
+            .setClientSecret(Config.get("SPOTIFY-CLIENT-SECRET"))
+            .build();
         final ClientCredentialsRequest.Builder credRequest =
-                new ClientCredentialsRequest.Builder(spotify.getClientId(), spotify.getClientSecret());
+            new ClientCredentialsRequest.Builder(spotify.getClientId(), spotify.getClientSecret());
         final ClientCredentials credentials = credRequest.grant_type("client_credentials").build().execute();
         spotify.setAccessToken(credentials.getAccessToken());
         ElixirClient.logger.info("Successfully updated Spotify OAuth access token.");
+    }
+
+    public static SpotifyApi getSpotify() {
+        return spotify;
     }
 
     public AudioSourceManager getSearchSourceManager() {
@@ -141,7 +145,8 @@ public final class SpotifySourceManager implements AudioSourceManager {
     }
 
     @Override
-    public void shutdown() {}
+    public void shutdown() {
+    }
 
     public AudioItem getSearch(String query) throws IOException, ParseException, SpotifyWebApiException {
         final Paging<Track> searchResult = spotify.searchTracks(query).build().execute();
@@ -203,9 +208,5 @@ public final class SpotifySourceManager implements AudioSourceManager {
             tracks.add(SpotifyTrack.of(item, this));
         }
         return new BasicAudioPlaylist(artist.getName() + "'s Top Tracks", tracks, null, false);
-    }
-
-    public static SpotifyApi getSpotify() {
-        return spotify;
     }
 }

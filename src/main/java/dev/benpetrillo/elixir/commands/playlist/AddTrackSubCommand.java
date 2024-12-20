@@ -55,7 +55,9 @@ public final class AddTrackSubCommand extends SubCommand implements Arguments {
         if (!Utilities.isValidURL(track)) {
             try {
                 track = HttpUtil.searchForVideo(track);
-            } catch (Exception ignored) { return; }
+            } catch (Exception ignored) {
+                return;
+            }
             if (track == null) {
                 interaction.reply(Embed.error("Unable to find a track with the query `" + track + "`."), false);
                 return;
@@ -77,9 +79,9 @@ public final class AddTrackSubCommand extends SubCommand implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
-                Argument.create("track", "The track to add to the playlist.", "track", OptionType.STRING, true, 1),
-                Argument.create("index", "The index of the track.", "index", OptionType.INTEGER, false, 2)
+            Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
+            Argument.create("track", "The track to add to the playlist.", "track", OptionType.STRING, true, 1),
+            Argument.create("index", "The index of the track.", "index", OptionType.INTEGER, false, 2)
         );
     }
 }

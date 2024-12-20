@@ -23,7 +23,6 @@ import dev.benpetrillo.elixir.commands.GuildsCommand;
 import dev.benpetrillo.elixir.commands.misc.ConfigureCommand;
 import dev.benpetrillo.elixir.commands.misc.GenKeyCommand;
 import dev.benpetrillo.elixir.commands.misc.InfoCommand;
-import dev.benpetrillo.elixir.commands.music.StopCommand;
 import dev.benpetrillo.elixir.commands.music.*;
 import dev.benpetrillo.elixir.utils.Embed;
 import tech.xigam.cch.ComplexCommandHandler;
@@ -34,6 +33,37 @@ import java.util.List;
 
 public final class ApplicationCommandManager {
 
+    private ApplicationCommandManager(ComplexCommandHandler handler) {
+        registerCommand(handler,
+            new GenKeyCommand(),
+            new InfoCommand(),
+            new JoinCommand(),
+            new LoopCommand(),
+            new LyricsCommand(),
+            new MoveQueueCommand(),
+            new NowPlayingCommand(),
+            new PauseCommand(),
+            new PlayCommand(),
+            new PlaylistCommand(),
+            new QueueCommand(),
+            new LeaveCommand(),
+            new ResumeCommand(),
+            new ShuffleCommand(),
+            new SkipCommand(),
+            new StopCommand(),
+            new VolumeCommand()
+        );
+
+        // Register commands specific to guild-only deployments.
+        if (ElixirConstants.DEPLOY_GUILD) {
+            handler
+                .registerCommand(new GuildsCommand())
+                .registerCommand(new ConfigureCommand());
+        }
+
+        handler.onArgumentError = interaction -> interaction.setEphemeral().reply(Embed.error("Invalid argument(s) provided."));
+    }
+
     public static void initialize() {
         new ApplicationCommandManager(ElixirClient.getCommandHandler());
         if (ElixirConstants.DEPLOY_GLOBAL) {
@@ -43,37 +73,6 @@ public final class ApplicationCommandManager {
             ElixirClient.getCommandHandler().downsert(null);
             ElixirClient.logger.info("All global slash commands have been deleted.");
         }
-    }
-
-    private ApplicationCommandManager(ComplexCommandHandler handler) {
-        registerCommand(handler,
-                new GenKeyCommand(),
-                new InfoCommand(),
-                new JoinCommand(),
-                new LoopCommand(),
-                new LyricsCommand(),
-                new MoveQueueCommand(),
-                new NowPlayingCommand(),
-                new PauseCommand(),
-                new PlayCommand(),
-                new PlaylistCommand(),
-                new QueueCommand(),
-                new LeaveCommand(),
-                new ResumeCommand(),
-                new ShuffleCommand(),
-                new SkipCommand(),
-                new StopCommand(),
-                new VolumeCommand()
-        );
-
-        // Register commands specific to guild-only deployments.
-        if (ElixirConstants.DEPLOY_GUILD) {
-            handler
-                    .registerCommand(new GuildsCommand())
-                    .registerCommand(new ConfigureCommand());
-        }
-
-        handler.onArgumentError = interaction -> interaction.setEphemeral().reply(Embed.error("Invalid argument(s) provided."));
     }
 
     private void registerCommand(ComplexCommandHandler handler, BaseCommand... commands) {

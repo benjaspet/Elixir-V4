@@ -18,13 +18,17 @@ package dev.benpetrillo.elixir;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import dev.benpetrillo.elixir.api.APIHandler;
-import dev.benpetrillo.elixir.events.*;
-import dev.benpetrillo.elixir.managers.*;
+import dev.benpetrillo.elixir.events.GuildListener;
+import dev.benpetrillo.elixir.events.ReadyListener;
+import dev.benpetrillo.elixir.events.ShutdownListener;
+import dev.benpetrillo.elixir.managers.ApplicationCommandManager;
+import dev.benpetrillo.elixir.managers.ConfigStartupManager;
+import dev.benpetrillo.elixir.managers.DatabaseManager;
+import dev.benpetrillo.elixir.managers.ElixirMusicManager;
 import dev.benpetrillo.elixir.music.spotify.SpotifySourceManager;
 import dev.benpetrillo.elixir.objects.OAuthUpdateTask;
 import dev.benpetrillo.elixir.utils.Utilities;
 import lombok.Getter;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -44,37 +48,22 @@ import java.util.concurrent.TimeUnit;
 
 public final class ElixirClient {
 
-    @Getter private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(
-            2, 4, 60,
-            TimeUnit.SECONDS, new LinkedBlockingDeque<>()
+    @Getter
+    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+        2, 4, 60,
+        TimeUnit.SECONDS, new LinkedBlockingDeque<>()
     );
-
-    @Getter private static String envFile;
-    @Getter private static String id;
-
-    @Getter private static ElixirClient instance;
-
-    @Getter public static ComplexCommandHandler commandHandler;
-    @Getter public static Logger logger = LoggerFactory.getLogger("Elixir");
-
+    @Getter
+    public static ComplexCommandHandler commandHandler;
+    @Getter
+    public static Logger logger = LoggerFactory.getLogger("Elixir");
+    @Getter
+    private static String envFile;
+    @Getter
+    private static String id;
+    @Getter
+    private static ElixirClient instance;
     public JDA jda;
-
-    public static void main(String[] args) {
-        if (args.length < 1) {
-            logger.error("No environment file specified.");
-            System.exit(0);
-        }
-
-        ElixirClient.envFile = args[0];
-
-        try {
-            ConfigStartupManager.checkAll(); APIHandler.initialize();
-            instance = new ElixirClient(ElixirConstants.TOKEN);
-        } catch (LoginException | IllegalArgumentException | IOException exception) {
-            logger.error("Unable to initiate Elixir Music.", exception);
-            System.exit(0);
-        }
-    }
 
     private ElixirClient(String token) throws LoginException, IllegalArgumentException, IOException {
         final boolean usePrefix = !ElixirConstants.COMMAND_PREFIX.isEmpty();
@@ -83,28 +72,28 @@ public final class ElixirClient {
         logger.info("JDA Version: {}", Utilities.getJDAVersion());
 
         final JDABuilder builder = JDABuilder.createDefault(token)
-                .setActivity(Activity.listening(ElixirConstants.ACTIVITY))
-                .setStatus(OnlineStatus.ONLINE)
-                .setAutoReconnect(true)
-                .setIdle(false)
-                .setHttpClient(new OkHttpClient())
-                .setBulkDeleteSplittingEnabled(true)
-                .setWebsocketFactory(new WebSocketFactory())
-                .addEventListeners(
-                        new GuildListener(),
-                        new ReadyListener(),
-                        new ShutdownListener()
-                )
-                .enableIntents(
-                        GatewayIntent.DIRECT_MESSAGES,
-                        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                        GatewayIntent.DIRECT_MESSAGE_TYPING,
-                        GatewayIntent.GUILD_INVITES,
-                        GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                        GatewayIntent.GUILD_MESSAGE_TYPING,
-                        GatewayIntent.GUILD_VOICE_STATES,
-                        GatewayIntent.GUILD_WEBHOOKS
-                );
+            .setActivity(Activity.listening(ElixirConstants.ACTIVITY))
+            .setStatus(OnlineStatus.ONLINE)
+            .setAutoReconnect(true)
+            .setIdle(false)
+            .setHttpClient(new OkHttpClient())
+            .setBulkDeleteSplittingEnabled(true)
+            .setWebsocketFactory(new WebSocketFactory())
+            .addEventListeners(
+                new GuildListener(),
+                new ReadyListener(),
+                new ShutdownListener()
+            )
+            .enableIntents(
+                GatewayIntent.DIRECT_MESSAGES,
+                GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                GatewayIntent.DIRECT_MESSAGE_TYPING,
+                GatewayIntent.GUILD_INVITES,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                GatewayIntent.GUILD_MESSAGE_TYPING,
+                GatewayIntent.GUILD_VOICE_STATES,
+                GatewayIntent.GUILD_WEBHOOKS
+            );
         if (usePrefix) {
             builder.enableIntents(GatewayIntent.GUILD_MESSAGES);
             logger.info("Prefix support enabled! Prefix: {}", ElixirConstants.COMMAND_PREFIX);
@@ -129,6 +118,24 @@ public final class ElixirClient {
 
         // Register source managers.
         ElixirMusicManager.getInstance();
+    }
+
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            logger.error("No environment file specified.");
+            System.exit(0);
+        }
+
+        ElixirClient.envFile = args[0];
+
+        try {
+            ConfigStartupManager.checkAll();
+            APIHandler.initialize();
+            instance = new ElixirClient(ElixirConstants.TOKEN);
+        } catch (LoginException | IllegalArgumentException | IOException exception) {
+            logger.error("Unable to initiate Elixir Music.", exception);
+            System.exit(0);
+        }
     }
 
     public static JDA getJda() {

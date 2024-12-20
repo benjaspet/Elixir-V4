@@ -72,8 +72,8 @@ public final class ImportSubCommand extends SubCommand implements Arguments {
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
-                Argument.create("playlist", "The playlist to append to the Elixir playlist.", "playlist", OptionType.STRING, true, 1)
+            Argument.create("id", "The playlist ID.", "id", OptionType.STRING, true, 0),
+            Argument.create("playlist", "The playlist to append to the Elixir playlist.", "playlist", OptionType.STRING, true, 1)
         );
     }
 }

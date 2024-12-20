@@ -53,13 +53,14 @@ public final class TrackUtil {
 
     /**
      * Returns a URL of a track/video's cover art/thumbnail.
+     *
      * @param track The AudioTrack to fetch.
      * @return String
      */
 
     public static String getCoverArt(AudioTrackInfo track) {
         var trackUri = track.uri;
-        switch(TrackUtil.determineTrackType(trackUri)) {
+        switch (TrackUtil.determineTrackType(trackUri)) {
             default -> {
                 return null;
             }
@@ -67,7 +68,8 @@ public final class TrackUtil {
                 String artUrl = null;
                 try {
                     String[] firstSplit = trackUri.split("/");
-                    String[] secondSplit; String id;
+                    String[] secondSplit;
+                    String id;
                     if (firstSplit.length > 5) {
                         secondSplit = firstSplit[6].split("\\?");
                     } else {
@@ -80,7 +82,8 @@ public final class TrackUtil {
                     artUrl = thumbnail.getUrl();
                 } catch (Exception exception) {
                     exception.printStackTrace();
-                } return artUrl;
+                }
+                return artUrl;
             }
             case YOUTUBE -> {
                 final YTVideoData data = HttpUtil.getVideoData(Utilities.extractVideoId(track.uri));
@@ -103,6 +106,7 @@ public final class TrackUtil {
 
     /**
      * Get track data from a Spotify URL.
+     *
      * @param url The Spotify URL.
      * @return Track
      */
@@ -110,7 +114,8 @@ public final class TrackUtil {
     public static Track getTrackDataFromSpotifyURL(String url) {
         try {
             String[] firstSplit = url.split("/");
-            String[] secondSplit; String id;
+            String[] secondSplit;
+            String id;
             if (firstSplit.length > 5) {
                 secondSplit = firstSplit[6].split("\\?");
             } else {
@@ -127,6 +132,7 @@ public final class TrackUtil {
 
     /**
      * Get playlist data from a Spotify URL.
+     *
      * @param url The Spotify URL.
      * @return Playlist
      */
@@ -134,7 +140,8 @@ public final class TrackUtil {
     public static List<se.michaelthelin.spotify.model_objects.specification.PlaylistTrack> getPlaylistDataFromSpotifyUrl(String url) {
         try {
             String[] firstSplit = url.split("/");
-            String[] secondSplit; String id;
+            String[] secondSplit;
+            String id;
             if (firstSplit.length > 5) {
                 secondSplit = firstSplit[6].split("\\?");
             } else {
@@ -152,6 +159,7 @@ public final class TrackUtil {
 
     /**
      * Creates an {@link AudioTrackInfo} object from a given URL.
+     *
      * @param url The URL to fetch information from.
      * @return An AudioTrackInfo object.
      */
@@ -163,22 +171,22 @@ public final class TrackUtil {
                 Track track = TrackUtil.getTrackDataFromSpotifyURL(url);
                 if (track == null) return null;
                 var trackInfo = new ExtendedAudioTrackInfo(
-                        track.getName(), track.getArtists()[0].getName(),
-                        track.getDurationMs(), track.getId(), false,
-                        track.getHref()
+                    track.getName(), track.getArtists()[0].getName(),
+                    track.getDurationMs(), track.getId(), false,
+                    track.getHref()
                 );
                 trackInfo.isrc = track.getExternalIds().getExternalIds().getOrDefault("isrc", null);
                 return trackInfo;
             }
             case YOUTUBE -> {
                 YTVideoData searchData = HttpUtil.getVideoData(Utilities.extractVideoId(url));
-                if(searchData == null) return null;
+                if (searchData == null) return null;
                 YTVideoData.Item.Snippet query = searchData.items.get(0).snippet;
                 long length = Utilities.cleanYouTubeFormat(searchData.items.get(0).contentDetails.duration);
                 return new AudioTrackInfo(
-                        query.title, query.channelTitle, length,
-                        searchData.items.get(0).id, false,
-                        "https://youtu.be/" + searchData.items.get(0).id
+                    query.title, query.channelTitle, length,
+                    searchData.items.get(0).id, false,
+                    "https://youtu.be/" + searchData.items.get(0).id
                 );
             }
             case SOUNDCLOUD -> {
@@ -204,6 +212,7 @@ public final class TrackUtil {
 
     /**
      * Creates a collection of {@link AudioTrackInfo} objects from a given URL.
+     *
      * @param url The URL to fetch information from.
      * @return A collection of AudioTrackInfo objects.
      */
@@ -215,12 +224,12 @@ public final class TrackUtil {
             case SPOTIFY -> {
                 List<se.michaelthelin.spotify.model_objects.specification.PlaylistTrack> tracks = TrackUtil.getPlaylistDataFromSpotifyUrl(url);
                 if (tracks == null) return null;
-                for(se.michaelthelin.spotify.model_objects.specification.PlaylistTrack track : tracks) {
+                for (se.michaelthelin.spotify.model_objects.specification.PlaylistTrack track : tracks) {
                     Track playlistItem = (Track) track.getTrack();
                     ExtendedAudioTrackInfo trackInfo = new ExtendedAudioTrackInfo(
-                            playlistItem.getName(), playlistItem.getArtists()[0].getName(),
-                            playlistItem.getDurationMs(), playlistItem.getId(), false,
-                            playlistItem.getHref()
+                        playlistItem.getName(), playlistItem.getArtists()[0].getName(),
+                        playlistItem.getDurationMs(), playlistItem.getId(), false,
+                        playlistItem.getHref()
                     );
                     trackInfo.isrc = playlistItem.getExternalIds().getExternalIds().getOrDefault("isrc", null);
                     trackInfoCollection.add(trackInfo);
@@ -228,13 +237,13 @@ public final class TrackUtil {
             }
             case YOUTUBE -> {
                 YTVideoData searchData = HttpUtil.getPlaylistData(Utilities.extractPlaylistId(url));
-                for(YTVideoData.Item video : searchData.items) {
+                for (YTVideoData.Item video : searchData.items) {
                     YTVideoData.Item.Snippet query = video.snippet;
                     long length = Utilities.cleanYouTubeFormat(video.contentDetails.duration);
                     trackInfoCollection.add(new AudioTrackInfo(
-                            query.title, query.channelTitle, length,
-                            video.id, false,
-                            "https://youtu.be/" + video.id
+                        query.title, query.channelTitle, length,
+                        video.id, false,
+                        "https://youtu.be/" + video.id
                     ));
                 }
             }
@@ -247,6 +256,7 @@ public final class TrackUtil {
 
     /**
      * Appends a user ID to a track.
+     *
      * @param userId The user ID to add to the track.
      * @param tracks The track(s) to append the user ID to.
      */
@@ -259,6 +269,7 @@ public final class TrackUtil {
 
     /**
      * Determines the source for a given URL.
+     *
      * @param url The URL to find the source of.
      * @return A {@link TrackType} representing the source of the URL.
      */

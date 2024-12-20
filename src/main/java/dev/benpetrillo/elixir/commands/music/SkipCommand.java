@@ -21,10 +21,13 @@ package dev.benpetrillo.elixir.commands.music;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.benpetrillo.elixir.ElixirClient;
+import dev.benpetrillo.elixir.ElixirConstants;
 import dev.benpetrillo.elixir.managers.ElixirMusicManager;
 import dev.benpetrillo.elixir.managers.GuildMusicManager;
-import dev.benpetrillo.elixir.utils.*;
-import dev.benpetrillo.elixir.ElixirConstants;
+import dev.benpetrillo.elixir.utils.AudioUtil;
+import dev.benpetrillo.elixir.utils.Embed;
+import dev.benpetrillo.elixir.utils.TrackUtil;
+import dev.benpetrillo.elixir.utils.Utilities;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -83,27 +86,27 @@ public final class SkipCommand extends Command implements Arguments {
         final String url = upNext.getInfo().uri;
         final String requestedBy = "<@" + upNext.getUserData(String.class) + ">";
         final String contents = """
-                            • Artist: %s
-                            • Requested by: %s
-                            • Duration: %s
-                            • Livestream: %s
-                            """.formatted(artist, requestedBy, duration, isLive);
+            • Artist: %s
+            • Requested by: %s
+            • Duration: %s
+            • Livestream: %s
+            """.formatted(artist, requestedBy, duration, isLive);
         final MessageEmbed embed = new EmbedBuilder()
-                .setTitle("Up Next")
-                .setDescription("[%s](%s)".formatted(title, url))
-                .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
-                .setThumbnail(TrackUtil.getCoverArt(upNext.getInfo()))
-                .addField("Track Data", contents, false)
-                .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
-                .setTimestamp(new Date().toInstant())
-                .build();
+            .setTitle("Up Next")
+            .setDescription("[%s](%s)".formatted(title, url))
+            .setColor(ElixirConstants.DEFAULT_EMBED_COLOR)
+            .setThumbnail(TrackUtil.getCoverArt(upNext.getInfo()))
+            .addField("Track Data", contents, false)
+            .setFooter("Elixir Music", ElixirClient.getJda().getSelfUser().getAvatarUrl())
+            .setTimestamp(new Date().toInstant())
+            .build();
         interaction.reply(embed, false);
     }
 
     @Override
     public Collection<Argument> getArguments() {
         return List.of(
-                Argument.create("track", "The track to skip to.", "track", OptionType.INTEGER, false, 0)
+            Argument.create("track", "The track to skip to.", "track", OptionType.INTEGER, false, 0)
         );
     }
 }

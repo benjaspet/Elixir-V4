@@ -18,7 +18,8 @@
 
 package dev.benpetrillo.elixir.utils;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
@@ -40,6 +41,7 @@ public final class PlaylistUtil {
 
     /**
      * Create a custom playlist.
+     *
      * @param playlistId The playlist ID.
      * @return If the playlist was created.
      */
@@ -48,10 +50,10 @@ public final class PlaylistUtil {
         if (findPlaylist(playlistId) != null) return false;
         MongoCollection<Document> dbCollection = DatabaseManager.getPlaylistCollection();
         dbCollection.insertOne(new Document("playlistId", playlistId)
-                .append("creatorId", member.getId())
-                .append("playlistData", Utilities.base64Encode(Utilities.serialize(
-                        CustomPlaylist.create(playlistId, member)
-                ))));
+            .append("creatorId", member.getId())
+            .append("playlistData", Utilities.base64Encode(Utilities.serialize(
+                CustomPlaylist.create(playlistId, member)
+            ))));
         return true;
     }
 
@@ -69,6 +71,7 @@ public final class PlaylistUtil {
 
     /**
      * Get a custom playlist object by ID.
+     *
      * @param playlistId The playlist ID to get.
      * @return The playlist object or null if one cannot be found.
      */
@@ -84,6 +87,7 @@ public final class PlaylistUtil {
 
     /**
      * Gets all Elixir playlists in the database.
+     *
      * @return A list of all Elixir playlists.
      */
 
@@ -100,8 +104,9 @@ public final class PlaylistUtil {
 
     /**
      * Determines if the member is an author of the playlist.
+     *
      * @param playlist The playlist to check.
-     * @param member The member to check.
+     * @param member   The member to check.
      * @return The result of the check.
      */
 
@@ -111,6 +116,7 @@ public final class PlaylistUtil {
 
     /**
      * Get a collection of tracks in a custom playlist.
+     *
      * @param playlist The playlist to get tracks from.
      * @return A collection of playable tracks.
      */
@@ -132,19 +138,22 @@ public final class PlaylistUtil {
 
     /**
      * Adds a track to a custom playlist.
-     * @param track The track to add.
+     *
+     * @param track    The track to add.
      * @param playlist The playlist to add the track to.
      */
 
     public static void addTrackToList(AudioTrackInfo track, CustomPlaylist playlist, int index) {
-        if(track.uri == null) {
+        if (track.uri == null) {
             try {
                 var url = HttpUtil.searchForVideo(track.title);
 
                 track = new ExtendedAudioTrackInfo(
-                        track.title, track.author, track.length, track.identifier, track.isStream, url
+                    track.title, track.author, track.length, track.identifier, track.isStream, url
                 );
-            } catch (Exception ignored) { return; }
+            } catch (Exception ignored) {
+                return;
+            }
         }
         var newTrack = CustomPlaylist.CustomPlaylistTrack.from(track);
         if (index == -1) {
@@ -152,14 +161,16 @@ public final class PlaylistUtil {
         } else {
             try {
                 playlist.tracks.add(index, newTrack);
-            } catch (IndexOutOfBoundsException ignored) {}
+            } catch (IndexOutOfBoundsException ignored) {
+            }
         }
         updatePlaylist(playlist);
     }
 
     /**
      * Removes a track from a custom playlist.
-     * @param index The track to remove.
+     *
+     * @param index    The track to remove.
      * @param playlist The playlist to remove the track from.
      */
 
@@ -170,8 +181,9 @@ public final class PlaylistUtil {
 
     /**
      * Sets the cover of a custom playlist.
+     *
      * @param playlist The playlist to set the cover of.
-     * @param url The URL of the cover image.
+     * @param url      The URL of the cover image.
      */
 
     public static void setPlaylistCover(CustomPlaylist playlist, String url) {
@@ -181,8 +193,9 @@ public final class PlaylistUtil {
 
     /**
      * Sets the name of a custom playlist.
+     *
      * @param playlist The playlist to set the name of.
-     * @param name The name to set.
+     * @param name     The name to set.
      */
 
     public static void setPlaylistName(CustomPlaylist playlist, String name) {
@@ -192,7 +205,8 @@ public final class PlaylistUtil {
 
     /**
      * Sets the description of a custom playlist.
-     * @param playlist The playlist to set the description of.
+     *
+     * @param playlist    The playlist to set the description of.
      * @param description The description to set.
      */
 
@@ -203,8 +217,9 @@ public final class PlaylistUtil {
 
     /**
      * Sets the volume to set the player to on startup. (for a custom playlist)
+     *
      * @param playlist The playlist to set the starting volume of.
-     * @param volume The volume, as an integer, to set this playlist to.
+     * @param volume   The volume, as an integer, to set this playlist to.
      */
 
     public static void setPlaylistVolume(CustomPlaylist playlist, int volume) {
@@ -214,20 +229,23 @@ public final class PlaylistUtil {
 
     /**
      * Sets the author of a custom playlist.
-     * @param setting The author to set.
+     *
+     * @param setting  The author to set.
      * @param playlist The playlist to set the author of.
-     * @param value The value to set.
+     * @param value    The value to set.
      */
 
     public static void setPlaylistSetting(Setting setting, CustomPlaylist playlist, boolean value) {
         switch (setting) {
             case SHUFFLE -> playlist.options.shuffle = value;
             case REPEAT -> playlist.options.repeat = value;
-        } updatePlaylist(playlist);
+        }
+        updatePlaylist(playlist);
     }
 
     /**
      * Updates a custom playlist.
+     *
      * @param playlist The playlist to update.
      */
 
@@ -240,7 +258,8 @@ public final class PlaylistUtil {
         var update = Updates.set("playlistData", newData);
         try {
             dbCollection.updateOne(dbObject, update, new UpdateOptions().upsert(true));
-        } catch (MongoException ignored) {}
+        } catch (MongoException ignored) {
+        }
     }
 
     public enum Setting {

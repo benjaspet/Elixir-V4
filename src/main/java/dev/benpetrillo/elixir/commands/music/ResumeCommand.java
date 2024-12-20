@@ -31,13 +31,14 @@ public final class ResumeCommand extends Command {
     public ResumeCommand() {
         super("resume", "Resume the queue playback.");
     }
-    
+
     @Override
     public void execute(Interaction interaction) {
         if (AudioUtil.audioCheck(interaction)) return;
         assert interaction.getGuild() != null;
         final GuildMusicManager musicManager = ElixirMusicManager.getInstance().getMusicManager(interaction.getGuild());
-        MessageEmbed embed; if (musicManager.scheduler.player.isPaused()) {
+        MessageEmbed embed;
+        if (musicManager.scheduler.player.isPaused()) {
             musicManager.scheduler.player.setPaused(false);
             embed = Embed.def("Successfully resumed the queue.");
         } else {
